@@ -1,0 +1,23 @@
+export BROWSER='firefox'
+exec dwm &
+volume () {
+    mute=$(amixer get Master |grep % | awk '{print $6}'| sed 's/\[//' | sed 's/\]//' | head -n 1)
+    volume=$(amixer get Master |grep % | awk '{print $5}'| sed 's/[^0-9\%]//g' | head -n 1)
+    if [ $mute == "off" ]
+    then
+        string="vol mute"
+    else
+        string="vol $volume"
+    fi
+    echo $string
+
+    }
+while true; do
+	date=$(date +%d/%m/%y)
+	time=$(date +%R)
+	battery=$(cat /sys/class/power_supply/BAT0/capacity)
+	charging=$(cat /sys/class/power_supply/BAT0/status | sed 's/Charging/~/' | sed 's/Unknown//' | sed 's/Discharging//')
+	muted=$(volume)
+	xsetroot -name " $muted | bat $battery%$charging | $time | $date "
+	sleep 1
+done
